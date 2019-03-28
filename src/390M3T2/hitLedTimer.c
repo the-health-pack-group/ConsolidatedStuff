@@ -23,7 +23,7 @@ enum hitLedTimer_st_t {
 
 static bool running = false; // State machine running (set true when hit)
 
-void debugStatePrint(); // Debug function
+static void debugStatePrint(); // Debug function
 
 // Standard init function. Implement it even if it is not necessary. You may need it later.
 void hitLedTimer_init() {

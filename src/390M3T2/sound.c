@@ -113,7 +113,7 @@ static sound_st_t currentState = sound_init_st;
 // This is a debug state print routine. It will print the names of the states each
 // time tick() is called. It only prints states if they are different than the
 // previous state.
-void debugStatePrint() {
+static void debugStatePrint() {
   static sound_st_t previousState;
   static bool firstPass = true;
   // Only print the message if:
@@ -513,53 +513,3 @@ u32 I2SFifoRead (u32 i2sBaseAddr)
   {}
   return Xil_In32(i2sBaseAddr + I2S_RX_FIFO_REG);
 }
-/* ------------------------------------------------------------ */
-timer_ps.h
-/************************************************************************/
-/*                                                                      */
-/*  timer_ps.h  --  Timer Delay for Zynq systems                        */
-/*                                                                      */
-/************************************************************************/
-/*  Author: Sam Bobrowicz                                               */
-/*  Copyright 2014, Digilent Inc.                                       */
-/************************************************************************/
-/*  Module Description:                                                 */
-/*                                                                      */
-/*      Implements an accurate delay function using the scu timer.      */
-/*      Code from this module will cause conflicts with other code that */
-/*      requires the Zynq's scu timer.                                  */
-/*                                                                      */
-/*      This module contains code from the Xilinx Demo titled           */
-/*      "xscutimer_polled_example.c"                                    */
-/*                                                                      */
-/************************************************************************/
-/*  Revision History:                                                   */
-/*                                                                      */
-/*      2/14/2014(SamB): Created                                        */
-/*                                                                      */
-/************************************************************************/
-#ifndef TIMER_PS_H_
-#define TIMER_PS_H_
-
-#include "xil_types.h"
-#include "xparameters.h"
-
-/* ------------------------------------------------------------ */
-/*                  Miscellaneous Declarations                  */
-/* ------------------------------------------------------------ */
-
-#define TIMER_FREQ_HZ (XPAR_CPU_CORTEXA9_0_CPU_CLK_FREQ_HZ / 2)
-
-/* ------------------------------------------------------------ */
-/*                  Procedure Declarations                      */
-/* ------------------------------------------------------------ */
-
-int TimerInitialize(u16 TimerDeviceId);
-void TimerDelay(u32 uSDelay);
-
-/* ------------------------------------------------------------ */
-
-/************************************************************************/
-
-
-#endif /* TIMER_H_ */
