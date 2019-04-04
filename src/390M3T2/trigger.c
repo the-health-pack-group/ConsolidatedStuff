@@ -75,7 +75,8 @@ void trigger_tick() {
             if (triggerPressed() && timer >= TRIGGER_TIMER_MAX) {
                 timer = 0;
                 triggerState = on_st;
-                transmitter_run();
+                wantsToShoot = true;//transmitter_run();
+				debouncePressed = true;
             }
             else if (!triggerPressed()) {
                 timer = 0;
@@ -86,6 +87,7 @@ void trigger_tick() {
             if (!triggerPressed() && timer >= TRIGGER_TIMER_MAX) {
                 timer = 0;
                 triggerState = off_st;
+				debouncePressed = false;
             }
             else if (triggerPressed()) {
                 timer = 0;
