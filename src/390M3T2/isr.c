@@ -83,4 +83,6 @@ void isr_function() {
     trigger_tick();
     lockoutTimer_tick();
     hitLedTimer_tick();
+    
+    game_tick();
 }
