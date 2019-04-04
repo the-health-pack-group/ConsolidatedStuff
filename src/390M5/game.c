@@ -41,7 +41,7 @@ void game_tick () {
                 }
                 // No hits left
                 else {
-                    lives--;
+                    livesRemaining--;
                     hits = 0;
                     // TODO: death sound
                     game_setRunDetection(false);
@@ -49,13 +49,13 @@ void game_tick () {
                 }
                 
                 // Has lives
-                if (lives > 0) {
-                    lives--;
+                if (livesRemaining > 0) {
+                    livesRemaining--;
                     state = respawn_st;
                 }
                 // No lives left
                 else {
-                    lives--;
+                    livesRemaining--;
                     state = game_over_st;
                 }
                 
