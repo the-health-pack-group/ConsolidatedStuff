@@ -26,7 +26,6 @@ static bool enabled = false;        //To activate state machine
 
 
 static void debugStatePrint(); //Standard debug function
-bool triggerPressed(); //True when trigger is pressed
 
 // Initializes the mio subsystem.
 void trigger_init() {

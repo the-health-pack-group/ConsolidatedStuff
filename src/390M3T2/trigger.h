@@ -14,6 +14,12 @@ void trigger_init();
 // I don't have an associated trigger_disable() function because I don't need to disable the trigger.
 void trigger_enable();
 
+// Function that returns whether the trigger wishes to shoot
+bool trigger_wantsToShoot();
+
+//True when trigger is pressed
+bool triggerPressed();
+
 // Standard tick function.
 void trigger_tick();
 

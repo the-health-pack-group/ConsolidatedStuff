@@ -1,5 +1,10 @@
 #include "gun.h"
 
+/*enum gun_st_t {
+    init_st,
+   
+} gun_currentState;*/
+
 void gun_init()
 {
 	
