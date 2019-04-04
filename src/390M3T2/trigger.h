@@ -17,8 +17,11 @@ void trigger_enable();
 // Function that returns whether the trigger wishes to shoot
 bool trigger_wantsToShoot();
 
-//True when trigger is pressed
-bool triggerPressed();
+// Function that returns whether the debounced trigger is currently pressed
+bool trigger_debouncePressed();
+
+// Function to clear the wantsToShoot flag. Called after servicing wantsToShoot.
+void trigger_clearWantsToShoot();
 
 // Standard tick function.
 void trigger_tick();
