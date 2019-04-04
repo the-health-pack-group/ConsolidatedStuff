@@ -1,4 +1,7 @@
 #include "game.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdio.h>
 
 static bool runDetection = true;
 static bool wasShot = false;
@@ -17,11 +20,11 @@ enum game_st_t {
     alive_st,
     respawn_st,
     game_over_st 
-} triggerState;
+} gameState;
 
 
 void game_init () {
-    state = init_st;
+    gameState = init_st;
     runDetection = true;
     hits = 0;
     livesRemaining = 3;
@@ -30,8 +33,8 @@ void game_init () {
 
 void game_tick () {
     // Transitions
-    switch (state) {
-        case init_st: state = alive_st; break;
+    switch (gameState) {
+        case init_st: gameState = alive_st; break;
         case alive_st: {
             if (game_wasShot()) {
                 // Still has hits
@@ -51,12 +54,12 @@ void game_tick () {
                 // Has lives
                 if (lives > 0) {
                     lives--;
-                    state = respawn_st;
+                    gameState = respawn_st;
                 }
                 // No lives left
                 else {
                     lives--;
-                    state = game_over_st;
+                    gameState = game_over_st;
                 }
                 
                 game_clearShot();
@@ -68,7 +71,7 @@ void game_tick () {
                 delay = 0;
                 gun_enable();
                 game_setRunDetection(true);
-                state = alive_st;
+                gameState = alive_st;
             }
         }
         break;
@@ -77,7 +80,7 @@ void game_tick () {
     }
     
     // Actions
-    switch (state) {
+    switch (gameState) {
         case init_st: break;
         case alive_st: break;
         case respawn_st: {
