@@ -23,7 +23,11 @@ enum trigger_st_t {
 
 static bool ignoreGunInput = false; //If true, ignore trigger
 static bool enabled = false;        //To activate state machine
+static bool wantsToShoot = false;	//Set to true as soon as the trigger press is debounced. Outside state machine must service flag and set to false
+static bool debouncePressed = false;	//Set to true when the trigger press is debounced. Set to false when the trigger release is debounced.
 
+//True when trigger is pressed
+bool triggerPressed();
 
 static void debugStatePrint(); //Standard debug function
 
@@ -71,7 +75,8 @@ void trigger_tick() {
             if (triggerPressed() && timer >= TRIGGER_TIMER_MAX) {
                 timer = 0;
                 triggerState = on_st;
-                transmitter_run();
+                wantsToShoot = true;//transmitter_run();
+				debouncePressed = true;
             }
             else if (!triggerPressed()) {
                 timer = 0;
@@ -82,6 +87,7 @@ void trigger_tick() {
             if (!triggerPressed() && timer >= TRIGGER_TIMER_MAX) {
                 timer = 0;
                 triggerState = off_st;
+				debouncePressed = false;
             }
             else if (triggerPressed()) {
                 timer = 0;
@@ -164,4 +170,22 @@ static void debugStatePrint() {
         break;
      }
   }
+}
+
+// Function that returns whether the trigger wishes to shoot
+bool trigger_wantsToShoot()
+{
+	return wantsToShoot;
+}
+
+// Function that returns whether the debounced trigger is currently pressed
+bool trigger_debouncePressed()
+{
+	return debouncePressed;
+}
+
+// Function to clear the wantsToShoot flag. Called after servicing wantsToShoot.
+void trigger_clearWantsToShoot()
+{
+	wantsToShoot = false;
 }
