@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include "gun.h"
 
 static bool runDetection = true;
 static bool wasShot = false;
@@ -54,12 +55,12 @@ void game_tick () {
                 // Has lives
                 if (livesRemaining > 0) {
                     livesRemaining--;
-                    state = respawn_st;
+                    gameState = respawn_st;
                 }
                 // No lives left
                 else {
                     livesRemaining--;
-                    state = game_over_st;
+                    gameState = game_over_st;
                 }
                 
                 game_clearShot();
@@ -87,7 +88,7 @@ void game_tick () {
             delay++;
         }
         break;
-        case game_over_st: 
+        case game_over_st: {
             // TODO: this should be a second of SILENCE
             if(delay >= GAME_RETURN_TO_BASE_DELAY) {
                 // TODO: play return to base sound
@@ -120,3 +121,5 @@ void game_setRunDetection(bool newRunDetection) {
 bool game_runDetection() {
     return runDetection;
 }
+
+

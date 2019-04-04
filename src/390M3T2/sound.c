@@ -9,14 +9,14 @@
 #include "xiicps.h"
 #include "timer_ps.h"
 #include "sound.h"
-#include "bcfire01_48k.wav.h"
-#include "pacmanDeath.wav.h"
-#include "gameBoyStartup.wav.h"
-#include "gunEmpty48k.wav.h"
-#include "powerUp48k.wav.h"
-#include "screamAndDie48k.wav.h"
-#include "ouch48k.wav.h"
-#include "gameOver48k.wav.h"
+#include "src/sounds/bcfire01_48k.wav.h"
+#include "src/sounds/pacmanDeath.wav.h"
+#include "src/sounds/gameBoyStartup.wav.h"
+#include "src/sounds/gunEmpty48k.wav.h"
+#include "src/sounds/powerUp48k.wav.h"
+#include "src/sounds/screamAndDie48k.wav.h"
+#include "src/sounds/ouch48k.wav.h"
+#include "src/sounds/gameOver48k.wav.h"
 #include "supportFiles/interrupts.h"  // Just for sound_runTest().
 
 /***************************************************************
