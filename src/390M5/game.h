@@ -5,7 +5,7 @@ void game_init();
 void game_tick();
 
 void game_setShot();
-bool game_washShot();
+bool game_wasShot();
 void game_clearShot();
 
 void game_setRunDetection(bool runDetection);

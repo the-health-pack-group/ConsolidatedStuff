@@ -12,7 +12,8 @@
 #include "lockoutTimer.h"
 #include "hitLedTimer.h"
 #include <stdio.h>
-
+#include "src/390M5/game.h"
+#include "src/390M3T2/sound.h"
 // Keep track of how many times isr_function() is called.
 //static uint64_t isr_totalXadcSampleCount = 0;
 
@@ -85,4 +86,5 @@ void isr_function() {
     hitLedTimer_tick();
     
     game_tick();
+    sound_tick();
 }
