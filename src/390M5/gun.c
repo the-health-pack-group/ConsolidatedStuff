@@ -1,12 +1,14 @@
 #include "gun.h"
 #include "trigger.h"
 #include "transmitter.h"
+#include "switches.h"
 
 #define MAX_SHOTCOUNT 10
 #define NO_SHOTS_LEFT 0
 #define RESET 0
 #define SHOT_SUCCESSFUL true
 #define SHOT_UNSUCCESSFUL false
+#define FILTER_FREQUENCY_COUNT 10
 
 enum gun_st_t {
 	init_st,
@@ -24,14 +26,23 @@ void gun_init()
 {
 	gun_currentState = init_st;
 	shotCount = MAX_SHOTCOUNT;
-	//TODO set our gun's frequency according to the switches. (Or do we want to do that in the game instead?)
+	//set our gun's frequency according to the switches. TODO (Do we want to do that in the game instead or is this good?)
+	uint16_t switchValue = switches_read() % FILTER_FREQUENCY_COUNT;    // Compute a safe number from the switches.
+	transmitter_setFrequencyNumber(switchValue);                        // set the frequency number based upon switch value
+}
+
+//Reloads the gun and plays the reload sound
+void gun_reload()
+{
+	shotCount = MAX_SHOTCOUNT;
+	//TODO play reload sound
 }
 
 bool gun_attemptShot()
 {
 	if (shotCount > NO_SHOTS_LEFT)	//If we still have shots in our clip
 	{
-		transmitter_run();			//Shoot at our specified frequency TODO set the frequency some time before this (during init() perhaps?)
+		transmitter_run();			//Shoot at our specified frequency
 		shotCount--;				//decrement shot count
 		//TODO play shooting sound
 		return SHOT_SUCCESSFUL;		//Return that we've successfully shot
@@ -42,11 +53,13 @@ bool gun_attemptShot()
 
 void gun_tick()
 {
+	static uint32_t reloadTimer = RESET;
 	//State transitions
 	switch (gun_currentState)
 	{
 	case init_st:
 		gun_currentState = wait_st;	//Go to our first state where we will wait for the trigger to be pulled
+		reloadTimer = RESET;
 		break;
 		
 	case wait_st:
@@ -60,31 +73,50 @@ void gun_tick()
 		
 	case shot_st:
 		//Check if we need to auto-reload (out of ammo), or if we should go to force-reload state
+		reloadTimer = RESET;	//Reset the reload timer
+		if (shotCount == NO_SHOTS_LEFT)
+		{
+			gun_currentState = auto_reload_st;
+		}
+		else
+		{
+			gun_currentState = force_reload_st;
+		}
 		break;
 		
-	case force_reload_st:
+	case force_reload_st:	//If trigger continues being pulled, reload after 3 seconds. If trigger is released, return to wait_st
+		if (reloadTimer > FORCE_RELOAD_TIME)
+		{
+			//TODO implement state transition, calling reload, etc.
+		}
 		break;
 		
-	case auto_reload_st:
+	case auto_reload_st:	//Wait for 2 seconds before auto-reloading
+		if (reloadTimer > AUTO_RELOAD_TIME)
+		{
+			//TODO implement state transition, calling reload, etc.
+		}
 		break;
 	}
 	
 	//State actions
 	switch (gun_currentState)
 	{
-		case init_st:
+	case init_st:
 		break;
 		
-		case wait_st:
+	case wait_st:
 		break;
 		
-		case shot_st:
+	case shot_st:
 		break;
 		
-		case force_reload_st:
+	case force_reload_st:	
+		reloadTimer++;
 		break;
 		
-		case auto_reload_st:
+	case auto_reload_st:	
+		reloadTimer++;
 		break;
 	}
 }
