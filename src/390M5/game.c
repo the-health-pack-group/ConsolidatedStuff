@@ -24,6 +24,7 @@ enum game_st_t {
     game_over_st 
 } gameState;
 
+void game_debugStatePrint();
 
 void game_init () {
     gameState = init_st;
@@ -34,6 +35,8 @@ void game_init () {
 }
 
 void game_tick () {
+    game_debugStatePrint();
+
     // Transitions
     switch (gameState) {
         case init_st: gameState = alive_st; break;
@@ -121,6 +124,34 @@ void game_setRunDetection(bool newRunDetection) {
 
 bool game_runDetection() {
     return runDetection;
+}
+
+void game_debugStatePrint () {
+    static enum game_st_t previousState;
+    static bool firstPass = true;
+    // Only print the message if:
+    // 1. This the first pass and the value for previousState is unknown.
+    // 2. previousState != currentState - this prevents reprinting the same state name over and over.
+    if (previousState != gameState || firstPass) {
+        firstPass = false;                // previousState will be defined, firstPass is false.
+        previousState = gameState;     // keep track of the last state that you were in.
+
+        switch(gameState) {            // This prints messages based upon the state that you were in.
+            case init_st:
+                printf("init_st\n\r");
+                break;
+            case alive_st:
+                printf("alive_st\n\r");
+                break;
+            case respawn_st:
+                printf("respawn_st\n\r");
+                break;
+            case game_over_st:
+                printf("game_over_st\n\r");
+                break;
+        }
+
+    }
 }
 
 

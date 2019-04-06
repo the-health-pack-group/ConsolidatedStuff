@@ -13,7 +13,7 @@
 
 #define DETECTOR_MEDIAN_INDEX 4
 #define DETECTOR_MAX_INDEX 9
-#define DETECTOR_FUDGE_FACTOR 50
+#define DETECTOR_FUDGE_FACTOR 80
 #define DETECTOR_PLAYER_COUNT 10
 #define DEFAULT_RETURN 0
 typedef uint16_t detector_hitCount_t;
