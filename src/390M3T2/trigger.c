@@ -12,7 +12,7 @@
 #include "supportFiles/utils.h"
 #include "supportFiles/mio.h"
 
-#define DEBUG 1 //Enables our debugStatePrint
+#define DEBUG 0 //Enables our debugStatePrint
 
 enum trigger_st_t {
     init_st, //Init state

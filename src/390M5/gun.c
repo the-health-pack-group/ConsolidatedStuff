@@ -12,10 +12,12 @@
 #define FILTER_FREQUENCY_COUNT 10
 #define FORCE_RELOAD_TIME 300000	//TODO calculate the actual value this needs to be (to = 3 seconds)
 #define AUTO_RELOAD_TIME 200000	//TODO calculate the actual value this needs to be (to = 2 seconds)
+#define DEBUG 0
 
 enum gun_st_t {
     init_st,
     wait_st,
+    shooting_st,//Wait until done shooting before moving on
     shot_st,
     force_reload_st,
     auto_reload_st
@@ -78,6 +80,10 @@ void debugStatePrint() {
             printf("wait_st\n\r");
             break;
 
+        case shooting_st:
+            printf("shooting_st\n\r");
+            break;
+
         case shot_st:
             printf("shot_st\n\r");
             break;
@@ -95,7 +101,7 @@ void debugStatePrint() {
 
 void gun_tick()
 {
-    debugStatePrint();
+    if (DEBUG) debugStatePrint();
     static uint32_t reloadTimer = RESET;
     //State transitions
     switch (gun_currentState)
@@ -108,18 +114,23 @@ void gun_tick()
     case wait_st:
         if (gun_enabled && trigger_wantsToShoot())	//If we are enabled and the trigger has been pulled
         {
-            printf("trigger pulled\n\r");
             gun_attemptShot();			//Attempt to shoot
             trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to indicate we have handled it)
-            gun_currentState = shot_st;	//Go to the state where we have already shot and will decide if we need to reload
+            gun_currentState = shooting_st;	//Go to the state where we have already shot and will decide if we need to reload
         }
         else
         {
             gun_currentState = wait_st;
-            if (!gun_enabled)
-            {
-                printf("Gun not enabled!\n\r");
-            }
+        }
+        break;
+
+    case shooting_st:
+        if(!transmitter_running()){ //If the transmitter is not running anymore
+            gun_currentState = shot_st; //Go to the state where we have already shot and will decide if we need to reload
+        }
+        else
+        {
+            gun_currentState = shooting_st; //Otherwise, stay in the same state
         }
         break;
 
@@ -179,6 +190,9 @@ void gun_tick()
         break;
 
     case wait_st:
+        break;
+
+    case shooting_st:
         break;
 
     case shot_st:
