@@ -2,6 +2,7 @@
 #include "trigger.h"
 #include "transmitter.h"
 #include "switches.h"
+#include "soundutil.h"
 
 #define MAX_SHOTCOUNT 10
 #define NO_SHOTS_LEFT 0
@@ -9,8 +10,8 @@
 #define SHOT_SUCCESSFUL true
 #define SHOT_UNSUCCESSFUL false
 #define FILTER_FREQUENCY_COUNT 10
-#define FORCE_RELOAD_TIME 1	//TODO calculate the actual value this needs to be (to = 3 seconds)
-#define AUTO_RELOAD_TIME 1	//TODO calculate the actual value this needs to be (to = 2 seconds)
+#define FORCE_RELOAD_TIME 300000	//TODO calculate the actual value this needs to be (to = 3 seconds)
+#define AUTO_RELOAD_TIME 200000	//TODO calculate the actual value this needs to be (to = 2 seconds)
 
 enum gun_st_t {
 	init_st,
@@ -33,6 +34,7 @@ void gun_init()
 //Reloads the gun and plays the reload sound
 void gun_reload()
 {
+	soundutil_forcePlay(sound_gunReload_e);
 	shotCount = MAX_SHOTCOUNT;
 	//TODO play reload sound
 }
@@ -41,11 +43,13 @@ bool gun_attemptShot()
 {
 	if (shotCount > NO_SHOTS_LEFT)	//If we still have shots in our clip
 	{
+		soundutil_forcePlay(sound_gunFire_e);
 		transmitter_run();			//Shoot at our specified frequency
 		shotCount--;				//decrement shot count
 		//TODO play shooting sound
 		return SHOT_SUCCESSFUL;		//Return that we've successfully shot
 	}
+	soundutil_forcePlay(sound_gunClick_e);
 	//TODO play empty clip sound
 	return SHOT_UNSUCCESSFUL;		//Otherwise, if our clip was empty, return that we did not successfully shoot
 }
@@ -103,6 +107,7 @@ void gun_tick()
 	case auto_reload_st:	//Wait for 2 seconds before auto-reloading
 		if (reloadTimer > AUTO_RELOAD_TIME)	//If we reached the 2 second auto-reloading time
 		{
+			
 			gun_reload();				//Reload the gun
 			gun_currentState = wait_st;	//Go back to the wait state
 		}
