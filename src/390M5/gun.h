@@ -2,8 +2,6 @@
 
 void gun_init();
 
-void gun_reset();
-
 void gun_tick();
 
 void gun_enable();
