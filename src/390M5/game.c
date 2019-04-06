@@ -41,7 +41,7 @@ void game_tick () {
         case alive_st: {
             if (game_wasShot()) {
                 // Still has hits
-                if (hits < GAME_HITS_PER_LIFE) {
+                if (hits <= GAME_HITS_PER_LIFE) {
                     hits++;
                     soundutil_forcePlay(sound_hit_e);
                 }
