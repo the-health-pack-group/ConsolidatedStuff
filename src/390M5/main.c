@@ -61,7 +61,7 @@ int main() {
 
     lockoutTimer_start();
 
-    while (true) {
+    while (game_isRunning()) {
         detector(true, true);
         
         if (detector_hitDetected()) {
@@ -77,6 +77,24 @@ int main() {
         }
     }
     
+    // Pac-Man Death
+    sound_setSound(sound_gameOver_e);
+    sound_startSound();
+    while (sound_isBusy());
+
+    sound_setVolume(sound_mediumLowVolume_e);
+
+    // Game Over, Return to Base
+    while (true) {
+        sound_setSound(sound_returnToBase_e);
+        sound_startSound();
+        while (sound_isBusy());
+
+        sound_setSound(sound_oneSecondSilence_e);
+        sound_startSound();
+        while (sound_isBusy());
+    }
+
     interrupts_disableArmInts();
     hitLedTimer_turnLedOff();
 }

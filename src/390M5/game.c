@@ -21,7 +21,7 @@ enum game_st_t {
     init_st,
     alive_st,
     respawn_st,
-    game_over_st 
+    game_over_st
 } gameState;
 
 void game_debugStatePrint();
@@ -92,16 +92,7 @@ void game_tick () {
             delay++;
         }
         break;
-        case game_over_st: {
-            // TODO: this should be a second of SILENCE
-            if(delay >= GAME_RETURN_TO_BASE_DELAY) {
-                soundutil_forcePlay(sound_gameOver_e);
-                delay = 0;
-            }
-            
-            delay++;
-        }
-        break;
+        case game_over_st: break;
         default: printf("Something is wrong"); break;
     }
 }
@@ -120,6 +111,10 @@ bool game_wasShot() {
 
 void game_setRunDetection(bool newRunDetection) {
     runDetection = newRunDetection;
+}
+
+bool game_isRunning() {
+    return (gameState != game_over_st);
 }
 
 bool game_runDetection() {
