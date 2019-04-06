@@ -12,7 +12,7 @@
 #include "supportFiles/utils.h"
 #include "supportFiles/mio.h"
 
-#define DEBUG 0 //Enables our debugStatePrint
+#define DEBUG 1 //Enables our debugStatePrint
 
 enum trigger_st_t {
     init_st, //Init state
@@ -23,7 +23,7 @@ enum trigger_st_t {
 
 static bool ignoreGunInput = false; //If true, ignore trigger
 static bool enabled = false;        //To activate state machine
-static bool wantsToShoot = false;	//Set to true as soon as the trigger press is debounced. Outside state machine must service flag and set to false
+volatile static bool wantsToShoot = false;	//Set to true as soon as the trigger press is debounced. Outside state machine must service flag and set to false
 static bool debouncePressed = false;	//Set to true when the trigger press is debounced. Set to false when the trigger release is debounced.
 
 //True when trigger is pressed
