@@ -86,5 +86,6 @@ void isr_function() {
     hitLedTimer_tick();
     
     game_tick();
+    gun_tick();
     sound_tick();
 }

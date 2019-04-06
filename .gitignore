@@ -1,3 +1,8 @@
 Debug/*
 !Debug
 
+.cproject
+.project
+.settings
+bootimage
+lscript.ld

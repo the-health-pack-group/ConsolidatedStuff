@@ -39,10 +39,13 @@ void init() {
     trigger_init();
     
     sound_init();
-    sound_setVolume(sound_mediumLowVolume_e);
+    sound_setVolume(sound_maximumVolume_e);
 
     interrupts_initAll(true);
     
+
+    interrupts_enableTimerGlobalInts();
+    interrupts_startArmPrivateTimer();
     interrupts_enableArmInts();
 }
 

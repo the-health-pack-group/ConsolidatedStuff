@@ -70,6 +70,7 @@ void game_tick () {
         case respawn_st: {
             if (delay >= GAME_RESPAWN_DELAY) {
                 delay = 0;
+                gun_init();
                 gun_enable();
                 game_setRunDetection(true);
                 gameState = alive_st;
