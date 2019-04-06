@@ -9,6 +9,8 @@
 #define SHOT_SUCCESSFUL true
 #define SHOT_UNSUCCESSFUL false
 #define FILTER_FREQUENCY_COUNT 10
+#define FORCE_RELOAD_TIME 1	//TODO calculate the actual value this needs to be (to = 3 seconds)
+#define AUTO_RELOAD_TIME 1	//TODO calculate the actual value this needs to be (to = 2 seconds)
 
 enum gun_st_t {
 	init_st,
@@ -21,14 +23,11 @@ enum gun_st_t {
 static uint8_t shotCount = MAX_SHOTCOUNT;
 static bool gun_enabled = true;
 
-//Initialize and resets the gun
+//Initialize and resets the gun and sets the player frequency?
 void gun_init()
 {
 	gun_currentState = init_st;
 	shotCount = MAX_SHOTCOUNT;
-	//set our gun's frequency according to the switches. TODO (Do we want to do that in the game instead or is this good?)
-	uint16_t switchValue = switches_read() % FILTER_FREQUENCY_COUNT;    // Compute a safe number from the switches.
-	transmitter_setFrequencyNumber(switchValue);                        // set the frequency number based upon switch value
 }
 
 //Reloads the gun and plays the reload sound
@@ -66,14 +65,14 @@ void gun_tick()
 		if (gun_enabled && trigger_wantsToShoot())	//If we are enabled and the trigger has been pulled
 		{
 			gun_attemptShot();			//Attempt to shoot
-			trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to say we have handled it)
+			trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to indicate we have handled it)
 			gun_currentState = shot_st;	//Go to the state where we have already shot and will decide if we need to reload
 		}
 		break;
 		
 	case shot_st:
 		//Check if we need to auto-reload (out of ammo), or if we should go to force-reload state
-		reloadTimer = RESET;	//Reset the reload timer
+		reloadTimer = RESET;	//Reset the reload timer before going into either reload state
 		if (shotCount == NO_SHOTS_LEFT)
 		{
 			gun_currentState = auto_reload_st;
@@ -85,16 +84,36 @@ void gun_tick()
 		break;
 		
 	case force_reload_st:	//If trigger continues being pulled, reload after 3 seconds. If trigger is released, return to wait_st
-		if (reloadTimer > FORCE_RELOAD_TIME)
+		if (!trigger_debouncePressed())
 		{
-			//TODO implement state transition, calling reload, etc.
+			gun_currentState = wait_st;
+		}
+		else if (reloadTimer > FORCE_RELOAD_TIME)	//if the trigger is still being pressed and 3 seconds have passed
+		{
+			//TODO is there anything else we need to do here besides the state transition and calling reload?
+			gun_reload();				//Reload the gun
+			gun_currentState = wait_st;	//Go back to the wait state
+		}
+		else	//Otherwise, if the trigger is still being pulled but 3 seconds have not passed yet
+		{
+			gun_currentState = force_reload_st;	//Stay in the same state
 		}
 		break;
 		
 	case auto_reload_st:	//Wait for 2 seconds before auto-reloading
-		if (reloadTimer > AUTO_RELOAD_TIME)
+		if (reloadTimer > AUTO_RELOAD_TIME)	//If we reached the 2 second auto-reloading time
 		{
-			//TODO implement state transition, calling reload, etc.
+			gun_reload();				//Reload the gun
+			gun_currentState = wait_st;	//Go back to the wait state
+		}
+		else	//Otherwise, if it hasn't been 2 seconds yet
+		{
+			if (trigger_wantsToShoot())	//If the user is trying to shoot
+			{
+				gun_attemptShot();			//Attempt to shoot (but since we are out of ammo, it will just play the clicking noise)
+				trigger_clearWantsToShoot();//Clear the shoot flag to indicate we have handled the shooting attempt
+			}
+			gun_currentState = auto_reload_st;	//stay in this state
 		}
 		break;
 	}
@@ -112,25 +131,28 @@ void gun_tick()
 		break;
 		
 	case force_reload_st:	
-		reloadTimer++;
+		reloadTimer++;		//Increment the reload timer while we are in this state
 		break;
 		
 	case auto_reload_st:	
-		reloadTimer++;
+		reloadTimer++;		//Increment the reload timer while we are in this state
 		break;
 	}
 }
 
+//When the gun is enabled, the state machine will progress as normal
 void gun_enable()
 {
 	gun_enabled = true;
 }
 
+//When the gun is disabled, the state machine will stay in the wait state
 void gun_disable()
 {
 	gun_enabled = false;
 }
 
+//Returns whether the gun is enabled or not
 bool gun_isEnabled()
 {
 	return gun_enabled;
