@@ -3,9 +3,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "gun.h"
+#include "soundutil.h"
 
-static bool runDetection = true;
-static bool wasShot = false;
+static volatile bool runDetection = true;
+static volatile bool wasShot = false;
 
 static uint8_t hits = 0;
 static uint8_t livesRemaining = 3;
@@ -41,26 +42,25 @@ void game_tick () {
                 // Still has hits
                 if (hits < GAME_HITS_PER_LIFE) {
                     hits++;
-                    // TODO: hit sound
+                    soundutil_forcePlay(sound_hit_e);
                 }
                 // No hits left
                 else {
-                    livesRemaining--;
                     hits = 0;
-                    // TODO: death sound
+                    soundutil_forcePlay(sound_loseLife_e);
                     game_setRunDetection(false);
                     gun_disable();
-                }
-                
-                // Has lives
-                if (livesRemaining > 0) {
+
                     livesRemaining--;
-                    gameState = respawn_st;
-                }
-                // No lives left
-                else {
-                    livesRemaining--;
-                    gameState = game_over_st;
+
+                    // Has lives
+                    if (livesRemaining > 0) {
+                        gameState = respawn_st;
+                    }
+                    // No lives left
+                    else {
+                        gameState = game_over_st;
+                    }
                 }
                 
                 game_clearShot();
@@ -92,7 +92,7 @@ void game_tick () {
         case game_over_st: {
             // TODO: this should be a second of SILENCE
             if(delay >= GAME_RETURN_TO_BASE_DELAY) {
-                // TODO: play return to base sound
+                soundutil_forcePlay(sound_gameOver_e);
                 delay = 0;
             }
             

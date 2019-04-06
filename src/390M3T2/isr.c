@@ -13,6 +13,7 @@
 #include "hitLedTimer.h"
 #include <stdio.h>
 #include "src/390M5/game.h"
+#include "src/390M5/gun.h"
 #include "src/390M3T2/sound.h"
 // Keep track of how many times isr_function() is called.
 //static uint64_t isr_totalXadcSampleCount = 0;

@@ -24,6 +24,7 @@ static detector_hitCount_t hitCounts[DETECTOR_PLAYER_COUNT];
 static uint8_t decimationCounter = 0;
 static bool useFakeData = false;
 static double fakePowerValues[DETECTOR_PLAYER_COUNT];
+static uint8_t playerNumber;
 
 typedef struct {
     uint8_t playerNumber;
@@ -44,9 +45,8 @@ void detector_init() {
 uint8_t detector_runDetectionAlgo(bool ignoreSelf, uint8_t playerNum);
 void printElems(detector_elem_t values[]);
 
-uint8_t player_number()
-{
-    return switches_read() % 10;
+void detector_setSelfFrequency(uint8_t nPlayerNumber) {
+    playerNumber = nPlayerNumber;
 }
 
 // Runs the entire detector: decimating fir-filter, iir-filters, power-computation, hit-detection.
@@ -97,8 +97,7 @@ void detector(bool interruptsEnabled, bool ignoreSelf) {
 
             if (! lockoutTimer_running()) {
                 // Hit Detection
-                uint8_t playerNum = player_number();
-                uint8_t hitPlayer = detector_runDetectionAlgo(ignoreSelf, playerNum);
+                uint8_t hitPlayer = detector_runDetectionAlgo(ignoreSelf, playerNumber);
 
                 if (detector_hitDetected()) {
 

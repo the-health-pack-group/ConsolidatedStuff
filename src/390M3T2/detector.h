@@ -29,6 +29,8 @@ bool detector_hitDetected();
 // Clear the detected hit once you have accounted for it.
 void detector_clearHit();
 
+void detector_setSelfFrequency(uint8_t playerNumber);
+
 // Get the current hit counts.
 // Copy the current hit counts into the user-provided hitArray
 // using a for-loop.

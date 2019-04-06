@@ -37,7 +37,7 @@ void init() {
     
     transmitter_init();
     trigger_init();
-    
+    gun_init();
     sound_init();
     sound_setVolume(sound_maximumVolume_e);
 
@@ -51,14 +51,16 @@ void init() {
 
 int main() {
     init();
-
-    
-    lockoutTimer_start();
     
     initializeFrequency();
     
     soundutil_forcePlay(sound_gameStart_e);
     
+    while(sound_isBusy());
+
+
+    lockoutTimer_start();
+
     while (true) {
         detector(true, true);
         
@@ -85,4 +87,5 @@ void initializeFrequency() {
     uint16_t realFreq = playerChannel == 0 ? GAME_FREQ_TEAM_A : GAME_FREQ_TEAM_B;
     
     transmitter_setFrequencyNumber(realFreq);
+    detector_setSelfFrequency(realFreq);
 }
