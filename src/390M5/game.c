@@ -35,8 +35,6 @@ void game_init () {
 }
 
 void game_tick () {
-    game_debugStatePrint();
-
     // Transitions
     switch (gameState) {
         case init_st: gameState = alive_st; break;

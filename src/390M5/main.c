@@ -82,8 +82,6 @@ int main() {
     sound_startSound();
     while (sound_isBusy());
 
-    sound_setVolume(sound_mediumLowVolume_e);
-
     // Game Over, Return to Base
     while (true) {
         sound_setSound(sound_returnToBase_e);
