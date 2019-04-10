@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "gun.h"
 #include "soundutil.h"
+#include "src/390M3T2/hitLedTimer.h"
 
 static volatile bool runDetection = true;
 static volatile bool wasShot = false;
@@ -12,7 +13,7 @@ static uint8_t hits = 0;
 static uint8_t livesRemaining = 3;
 static uint32_t delay = 0;
 
-#define GAME_HITS_PER_LIFE 5
+#define GAME_HITS_PER_LIFE 4
 #define GAME_RESPAWN_DELAY 500e3 // 5 seconds
 #define GAME_RETURN_TO_BASE_DELAY 100e3 // 1 second
 
@@ -41,7 +42,7 @@ void game_tick () {
         case alive_st: {
             if (game_wasShot()) {
                 // Still has hits
-                if (hits <= GAME_HITS_PER_LIFE) {
+                if (hits < GAME_HITS_PER_LIFE) {
                     hits++;
                     soundutil_forcePlay(sound_hit_e);
                 }
