@@ -6,6 +6,7 @@
 #include "isr.h"
 #include "lockoutTimer.h"
 #include "hitLedTimer.h"
+#include "src/390M5/game.h"
 
 #define DETECTOR_ADC_HALFWAY_POINT 2048.0
 #define DETECTOR_COMPUTE_FROM_SCRATCH false
@@ -13,7 +14,7 @@
 
 #define DETECTOR_MEDIAN_INDEX 4
 #define DETECTOR_MAX_INDEX 9
-#define DETECTOR_FUDGE_FACTOR 80
+#define DETECTOR_FUDGE_FACTOR 150
 #define DETECTOR_PLAYER_COUNT 10
 #define DEFAULT_RETURN 0
 typedef uint16_t detector_hitCount_t;
@@ -182,7 +183,9 @@ uint8_t detector_runDetectionAlgo(bool ignoreSelf, uint8_t playerNum) {
     if (max.value > threshold && ! ignoreMax)
     {
         //Hit detected
-        hitDetected = true;
+        if (game_runDetection()) {
+            hitDetected = true;
+        }
         //Return which player was detected
         return max.playerNumber;
     }
