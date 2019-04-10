@@ -4,27 +4,27 @@
 #include "soundutil.h"
 #include <stdio.h>
 
-#define MAX_SHOTCOUNT 10
-#define NO_SHOTS_LEFT 0
-#define RESET 0
-#define SHOT_SUCCESSFUL true
-#define SHOT_UNSUCCESSFUL false
-#define FILTER_FREQUENCY_COUNT 10
-#define FORCE_RELOAD_TIME 300000	//TODO calculate the actual value this needs to be (to = 3 seconds)
-#define AUTO_RELOAD_TIME 200000	//TODO calculate the actual value this needs to be (to = 2 seconds)
+#define MAX_SHOTCOUNT 10			//The number of shots in the clip before reloading is necessary
+#define NO_SHOTS_LEFT 0				//The number of shots when there are no shots left
+#define RESET 0						//Used to reset most integer variables
+#define SHOT_SUCCESSFUL true		//the value to return when shots are fired
+#define SHOT_UNSUCCESSFUL false		//the value to return if no shot was actually fired
+#define FORCE_RELOAD_TIME 300000	//the length of time before reloading if forced ( = 3 seconds)
+#define AUTO_RELOAD_TIME 200000		//the length of the auto-reload time in ticks ( = 2 seconds)
 #define DEBUG 0
 
+//States for the gun state machine
 enum gun_st_t {
-    init_st,
-    wait_st,
+    init_st,	//initialize everything necessary for the state machine
+    wait_st,	//wait here until the trigger is pulled
     shooting_st,//Wait until done shooting before moving on
-    shot_st,
-    force_reload_st,
-    auto_reload_st
+    shot_st,	//Once the shots have been fired, see whether we need to auto reload or not
+    force_reload_st,	//In this state check and see if the player holds down the trigger long enough to force a reload
+    auto_reload_st		//Auto reload if the player has run out of ammo
 } gun_currentState;
 
-static uint8_t shotCount = MAX_SHOTCOUNT;
-static bool gun_enabled = true;
+static uint8_t shotCount = MAX_SHOTCOUNT;	//Initialize the gun with a full clip
+static bool gun_enabled = true;				//The gun should be initially enabled
 
 //Initialize and resets the gun and sets the player frequency?
 void gun_init()
