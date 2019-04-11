@@ -23,8 +23,8 @@
 
 
 // Values used for the run test
-static const double fakeValues1[] = {30, 20, 31, 35, 38, 22, 28, 18, 99, 9500}; // Should detect hit
-static const double fakeValues2[] = {30, 20, 31, 35, 38, 22, 28, 18, 99, 50};   // Should NOT detect hit
+static double fakeValues1[] = {30, 20, 31, 35, 38, 22, 28, 18, 99, 9500}; // Should detect hit
+static double fakeValues2[] = {30, 20, 31, 35, 38, 22, 28, 18, 99, 50};   // Should NOT detect hit
 
 typedef uint16_t detector_hitCount_t;           // The number of hits detected
 

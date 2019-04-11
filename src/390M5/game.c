@@ -5,6 +5,7 @@
 #include "gun.h"
 #include "soundutil.h"
 #include "src/390M3T2/hitLedTimer.h"
+#include "src/390M3T2/detector.h"
 
 #define GAME_RESPAWN_DELAY 500e3            // 5 seconds; time to hide after losing a life.
 #define GAME_NUM_LIFES 3                    // 3 lives for the game
@@ -157,7 +158,7 @@ void game_tick () {
         }
         break;
         case game_over_st: break;   // No action
-        default: printf("Something is wrong"); break
+        default: printf("Something is wrong"); break;
     }
 }
 
