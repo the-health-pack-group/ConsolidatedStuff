@@ -26,6 +26,9 @@ void detector(bool interruptsEnabled, bool ignoreSelf);
 // Returns true if a hit was detected.
 bool detector_hitDetected();
 
+// Get the channel/player number that caused the hit
+uint8_t detector_getPlayerNumber();
+
 // Clear the detected hit once you have accounted for it.
 void detector_clearHit();
 

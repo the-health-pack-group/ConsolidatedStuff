@@ -12,6 +12,8 @@
 #define GAME_HITS_PER_LIFE 4                // 5 hits per life
 #define GAME_INITIAL_DELAY_VALUE 0          // start delay counter at zero
 
+#define HEALING_CHANNEL 3
+
 static volatile bool runDetection = true;   // Used in the detector to determine whether hits should be detected
 static volatile bool wasShot = false;       // A flag set by the detection loop when a hit occurred
 
@@ -58,15 +60,26 @@ void game_tick () {
             // If the player was shot
             if (game_wasShot()) { 
                 // IF the player still has health (not 5 hits yet)
-                if (hits < GAME_HITS_PER_LIFE) {
+                if (detector_getPlayerNumber() == HEALING_CHANNEL && hits > GAME_INITIAL_HITS) {
+                    // Increment the number of hits
+                    hits--;
+                    
+                    // Play the heal sound
+                    soundutil_forcePlay(sound_hit_e); // TODO: FIX ME
+                }
+                // IF the player still has health (not 5 hits yet)
+                else if (detector_getPlayerNumber() != HEALING_CHANNEL && hits < GAME_HITS_PER_LIFE) {
                     // Increment the number of hits
                     hits++;
+                    
+                    // Star the hit LED
+                    hitLedTimer_start();
                     
                     // Play the hit sound
                     soundutil_forcePlay(sound_hit_e);
                 }
                 // Otherwise, 5 hits causes the player to lose a life
-                else {
+                else if (detector_getPlayerNumber() != HEALING_CHANNEL) {
                     // Reset the number of hits in this life to zero
                     hits = GAME_INITIAL_HITS;
 

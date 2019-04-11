@@ -34,6 +34,7 @@ static uint8_t decimationCounter = DETECTOR_DECIMATION_INIT;    // The counter t
 static bool useFakeData = false;                                // Set to true to use fake data (for run test)
 static double fakePowerValues[DETECTOR_PLAYER_COUNT];           // An array used for supplying fake data to the dection algorithm
 static uint8_t playerNumber;                                    // The player number  (used for ignoring self)
+static uint8_t hitByPlayerNumber;
 
 // Struct used for sorting (remembers the player number)
 typedef struct {
@@ -55,6 +56,10 @@ void detector_init() {
 // Declare the functions we need internally
 uint8_t detector_runDetectionAlgo(bool ignoreSelf, uint8_t playerNum);
 void printElems(detector_elem_t values[]);
+
+uint8_t detector_getPlayerNumber() {
+    return hitByPlayerNumber;
+}
 
 // A function for setting the player number
 void detector_setSelfFrequency(uint8_t nPlayerNumber) {
@@ -125,9 +130,6 @@ void detector(bool interruptsEnabled, bool ignoreSelf) {
 
                     // Start the lockout timer
                     lockoutTimer_start();
-                    
-                    // Star the hit LED
-                    hitLedTimer_start();
 
                     // Increment the number of hits from the channel
                     hitCounts[hitPlayer]++;
@@ -210,6 +212,8 @@ uint8_t detector_runDetectionAlgo(bool ignoreSelf, uint8_t playerNum) {
         if (game_runDetection()) {
             hitDetected = true;
         }
+        
+        hitByPlayerNumber = max.playerNumber;
         
         //Return which player was detected
         return max.playerNumber;

@@ -44,6 +44,9 @@ typedef enum {
   sound_gunReload_e,    // Sound made when the gun reloads.
   sound_loseLife_e,     // Sound made when you are hit enough times.
   sound_gameOver_e,     // Sound made when the game is over.
+  sound_low_health_e,   // Sound made when you have low health
+  sound_healing_e,      // Sound made when you heal one hit point
+  sound_healed_e,       // Sound made when you are fully heal
   sound_returnToBase_e,  // Remind the user that the game is over.
   sound_oneSecondSilence_e  // One second of silence.
 } sound_sounds_t;
