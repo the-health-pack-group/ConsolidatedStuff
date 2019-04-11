@@ -4,6 +4,7 @@
 #define TRIGGER_GUN_TRIGGER_MIO_PIN 10
 #define GUN_TRIGGER_PRESSED 1
 #define TRIGGER_TIMER_MAX 5000
+#define RESET 0
 
 #include <stdio.h>
 #include <stdint.h>
@@ -31,6 +32,25 @@ bool triggerPressed();
 
 static void debugStatePrint(); //Standard debug function
 
+// Function that returns whether the trigger wishes to shoot (i.e. the trigger has been debounced and pulled)
+bool trigger_wantsToShoot()
+{
+	return wantsToShoot;
+}
+
+// Function that returns whether the debounced trigger is currently pressed
+bool trigger_debouncePressed()
+{
+	return debouncePressed;
+}
+
+// Function to clear the wantsToShoot flag. Called after servicing wantsToShoot. Prevents double shots from being possible.
+void trigger_clearWantsToShoot()
+{
+	wantsToShoot = false;
+}
+
+
 // Initializes the mio subsystem.
 void trigger_init() {
   mio_setPinAsInput(TRIGGER_GUN_TRIGGER_MIO_PIN);
@@ -56,41 +76,41 @@ void trigger_tick() {
     if (DEBUG)
         debugStatePrint();
 
-    static uint16_t timer = 0;
+    static uint16_t timer = RESET;
 
     // Transitions
     switch (triggerState) {
         case init_st: {
-            timer = 0;
-            triggerState = inactive_st;
+            timer = RESET;	//We want to initially reset the debounce timer
+            triggerState = inactive_st;	//We want to initially go to the state where trigger is not enabled
         }
         break;
         case inactive_st: {
-            if (enabled) {
-                triggerState = off_st;
+            if (enabled) {	//As soon as the trigger state machine becomes enabled
+                triggerState = off_st;	//Go to the state where the trigger is initially considered "off"
             }
         }
         break;
         case off_st: {
-            if (triggerPressed() && timer >= TRIGGER_TIMER_MAX) {
-                timer = 0;
-                triggerState = on_st;
-                wantsToShoot = true;//transmitter_run();
-				debouncePressed = true;
+            if (triggerPressed() && timer >= TRIGGER_TIMER_MAX) {//If the trigger remained pressed after the debouncing time
+                timer = RESET;	//Reset the debounce timer
+                triggerState = on_st;	//Go to the state where the trigger is considered to be "on"
+                wantsToShoot = true;	//Raise the flag to indicate that this is the time where a shot may be fired
+				debouncePressed = true;	//Raise the flag which indicates that the trigger has been debounced and is currently pressed
             }
-            else if (!triggerPressed()) {
-                timer = 0;
+            else if (!triggerPressed()) {	//If the trigger stops being pressed before the debouncing time limit
+                timer = RESET;	//Reset the debounce timer
             }
         }
         break;
         case on_st: {
-            if (!triggerPressed() && timer >= TRIGGER_TIMER_MAX) {
-                timer = 0;
-                triggerState = off_st;
-				debouncePressed = false;
+            if (!triggerPressed() && timer >= TRIGGER_TIMER_MAX) {	//If the trigger stops being pressed after the debouncing time
+                timer = RESET;	//Reset the debounce timer
+                triggerState = off_st;	//Go back to the state where the trigger is considered "off"
+				debouncePressed = false;//Indicate that the trigger has been debounced and is no longer pressed
             }
-            else if (triggerPressed()) {
-                timer = 0;
+            else if (triggerPressed()) {//If the trigger has not been released for longer than the debouncing time
+                timer = RESET;	//Reset the debounce timer
             }
         }
         break;
@@ -111,12 +131,12 @@ void trigger_tick() {
         }
         break;
         case off_st: {
-            timer++;
+            timer++;	//Increase the debounce timer while in this state
 
         }
         break;
         case on_st: {
-            timer++;
+            timer++;	//Increase the debounce timer while in this state
 
         }
         break;
@@ -172,20 +192,3 @@ static void debugStatePrint() {
   }
 }
 
-// Function that returns whether the trigger wishes to shoot
-bool trigger_wantsToShoot()
-{
-	return wantsToShoot;
-}
-
-// Function that returns whether the debounced trigger is currently pressed
-bool trigger_debouncePressed()
-{
-	return debouncePressed;
-}
-
-// Function to clear the wantsToShoot flag. Called after servicing wantsToShoot.
-void trigger_clearWantsToShoot()
-{
-	wantsToShoot = false;
-}

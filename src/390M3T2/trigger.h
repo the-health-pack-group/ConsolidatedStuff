@@ -14,7 +14,7 @@ void trigger_init();
 // I don't have an associated trigger_disable() function because I don't need to disable the trigger.
 void trigger_enable();
 
-// Function that returns whether the trigger wishes to shoot
+// Function that returns whether the trigger wishes to shoot (i.e. the debounced trigger has been pressed)
 bool trigger_wantsToShoot();
 
 // Function that returns whether the debounced trigger is currently pressed

@@ -29,32 +29,29 @@ static bool gun_enabled = true;				//The gun should be initially enabled
 //Initialize and resets the gun and sets the player frequency?
 void gun_init()
 {
-    trigger_init();
-    gun_currentState = init_st;
-    shotCount = MAX_SHOTCOUNT;
-    trigger_enable();
+    trigger_init();				//Also ensure that the trigger state machine is initialized
+    gun_currentState = init_st;	//Start the state machine in the init state
+    shotCount = MAX_SHOTCOUNT;	//Make sure the clip is full initially
+    trigger_enable();			//Enable the trigger state machine
 }
 
 //Reloads the gun and plays the reload sound
 void gun_reload()
 {
-    soundutil_forcePlay(sound_gunReload_e);
-    shotCount = MAX_SHOTCOUNT;
-    //TODO play reload sound
+    soundutil_forcePlay(sound_gunReload_e);	//If the gun needs to be reloaded, play the reload sound
+    shotCount = MAX_SHOTCOUNT;				//refill the gun's clip
 }
 
 bool gun_attemptShot()
 {
     if (shotCount > NO_SHOTS_LEFT)	//If we still have shots in our clip
     {
-        soundutil_forcePlay(sound_gunFire_e);
+        soundutil_forcePlay(sound_gunFire_e);//Play the shooting sound
         transmitter_run();			//Shoot at our specified frequency
         shotCount--;				//decrement shot count
-        //TODO play shooting sound
         return SHOT_SUCCESSFUL;		//Return that we've successfully shot
     }
-    soundutil_forcePlay(sound_gunClick_e);
-    //TODO play empty clip sound
+    soundutil_forcePlay(sound_gunClick_e);//play clicking sound if no shot was made because of an empty clip
     return SHOT_UNSUCCESSFUL;		//Otherwise, if our clip was empty, return that we did not successfully shoot
 }
 
@@ -101,14 +98,14 @@ void debugStatePrint() {
 
 void gun_tick()
 {
-    if (DEBUG) debugStatePrint();
-    static uint32_t reloadTimer = RESET;
+    if (DEBUG) debugStatePrint();		//If we are in DEBUG mode, then print out the current state
+    static uint32_t reloadTimer = RESET;//Initialize our timer that will keep track of how long we wait before reloading
     //State transitions
     switch (gun_currentState)
     {
     case init_st:
         gun_currentState = wait_st;	//Go to our first state where we will wait for the trigger to be pulled
-        reloadTimer = RESET;
+        reloadTimer = RESET;		//Reset the reload timer initially
         break;
 
     case wait_st:
@@ -120,7 +117,7 @@ void gun_tick()
         }
         else
         {
-            gun_currentState = wait_st;
+            gun_currentState = wait_st;	//If the trigger was not pulled or we are not enabled, keep waiting
         }
         break;
 
@@ -137,24 +134,23 @@ void gun_tick()
     case shot_st:
         //Check if we need to auto-reload (out of ammo), or if we should go to force-reload state
         reloadTimer = RESET;	//Reset the reload timer before going into either reload state
-        if (shotCount == NO_SHOTS_LEFT)
+        if (shotCount == NO_SHOTS_LEFT)	//If we have no shots left
         {
-            gun_currentState = auto_reload_st;
+            gun_currentState = auto_reload_st;	//Then we need to auto-reload no matter what
         }
         else
         {
-            gun_currentState = force_reload_st;
+            gun_currentState = force_reload_st;	//Otherwise, check to see if the player wants to force a reload
         }
         break;
 
     case force_reload_st:	//If trigger continues being pulled, reload after 3 seconds. If trigger is released, return to wait_st
-        if (!trigger_debouncePressed())
+        if (!trigger_debouncePressed())	//If the debounced trigger is no longer being pulled
         {
-            gun_currentState = wait_st;
+            gun_currentState = wait_st;	//Go back to the state where we will wait for the next shot to be fired
         }
         else if (reloadTimer > FORCE_RELOAD_TIME)	//if the trigger is still being pressed and 3 seconds have passed
         {
-            //TODO is there anything else we need to do here besides the state transition and calling reload?
             gun_reload();				//Reload the gun
             gun_currentState = wait_st;	//Go back to the wait state
         }
@@ -211,17 +207,17 @@ void gun_tick()
 //When the gun is enabled, the state machine will progress as normal
 void gun_enable()
 {
-    gun_enabled = true;
+    gun_enabled = true;	//Enable the gun state machine
 }
 
 //When the gun is disabled, the state machine will stay in the wait state
 void gun_disable()
 {
-    gun_enabled = false;
+    gun_enabled = false;//Disable the gun state machine
 }
 
 //Returns whether the gun is enabled or not
 bool gun_isEnabled()
 {
-    return gun_enabled;
+    return gun_enabled;//Return whether the gun is actually enabled
 }
