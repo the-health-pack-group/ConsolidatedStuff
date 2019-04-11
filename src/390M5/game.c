@@ -10,6 +10,7 @@
 #define GAME_NUM_LIFES 3                    // 3 lives for the game
 #define GAME_INITIAL_HITS 0                 // 0 initial hits
 #define GAME_HITS_PER_LIFE 4                // 5 hits per life
+#define GAME_HITS_LOW_HEALTH 3				// Hit # 3 is a low health warning
 #define GAME_INITIAL_DELAY_VALUE 0          // start delay counter at zero
 
 #define HEALING_CHANNEL 3
@@ -65,7 +66,12 @@ void game_tick () {
                     hits--;
                     
                     // Play the heal sound
-                    soundutil_forcePlay(sound_hit_e); // TODO: FIX ME
+                    if (hits == 0) {
+	                    soundutil_forcePlay(sound_healed_e);
+					}
+					else {
+	                    soundutil_forcePlay(sound_healing_e);
+					}
                 }
                 // IF the player still has health (not 5 hits yet)
                 else if (detector_getPlayerNumber() != HEALING_CHANNEL && hits < GAME_HITS_PER_LIFE) {
@@ -75,8 +81,14 @@ void game_tick () {
                     // Star the hit LED
                     hitLedTimer_start();
                     
-                    // Play the hit sound
-                    soundutil_forcePlay(sound_hit_e);
+					if (hits >= GAME_HITS_LOW_HEALTH) {
+		                // Play the low health sound
+		                soundutil_forcePlay(sound_low_health_e);
+					}
+					else {
+		                // Play the hit sound
+		                soundutil_forcePlay(sound_hit_e);
+					}
                 }
                 // Otherwise, 5 hits causes the player to lose a life
                 else if (detector_getPlayerNumber() != HEALING_CHANNEL) {
