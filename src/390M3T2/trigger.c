@@ -1,10 +1,10 @@
 
 #include "trigger.h"
 
-#define TRIGGER_GUN_TRIGGER_MIO_PIN 10
-#define GUN_TRIGGER_PRESSED 1
-#define TRIGGER_TIMER_MAX 5000
-#define RESET 0
+#define TRIGGER_GUN_TRIGGER_MIO_PIN 10	//The mio pin needed to access the trigger
+#define GUN_TRIGGER_PRESSED 1	//The value that indicates that the gun trigger is pressed
+#define TRIGGER_TIMER_MAX 5000	//The number of ticks needed to debounce the trigger pull and release
+#define RESET 0	//Value used to reset most integer variables
 
 #include <stdio.h>
 #include <stdint.h>
