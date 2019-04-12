@@ -17,6 +17,7 @@
 #include "src/sounds/screamAndDie48k.wav.h"
 #include "src/sounds/ouch48k.wav.h"
 #include "src/sounds/gameOver48k.wav.h"
+#include "src/sounds/healing_fixed.wav.h"
 #include "src/sounds/healed.wav.h"
 #include "src/sounds/low_health.wav.h"
 #include "supportFiles/interrupts.h"  // Just for sound_runTest().
@@ -247,8 +248,8 @@ void sound_setSound(sound_sounds_t sound) {
     sound_sampleCount = LOW_HEALTH_WAV_NUMBER_OF_SAMPLES;
     break;
   case sound_healing_e:
-    //sound_array = healing_wav;
-    //sound_sampleCount = GAMEOVER48K_WAV_NUMBER_OF_SAMPLES;
+    sound_array = healing_fixed_wav;
+    sound_sampleCount = HEALING_FIXED_WAV_NUMBER_OF_SAMPLES;
     break;
   case sound_healed_e:
     sound_array = healed_wav;
