@@ -118,11 +118,19 @@ void gun_tick()
         else
         {
             gun_currentState = wait_st;	//If the trigger was not pulled or we are not enabled, keep waiting
+            trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to indicate we have handled it)
+            reloadTimer = RESET;        //Reset the reload timer initially
         }
         break;
 
     case shooting_st:
-        if(!transmitter_running()){ //If the transmitter is not running anymore
+        if (!gun_enabled)
+        {
+            gun_currentState = wait_st;
+            trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to indicate we have handled it)
+            reloadTimer = RESET;        //Reset the reload timer initially
+        }
+        else if(!transmitter_running()){ //If the transmitter is not running anymore
             gun_currentState = shot_st; //Go to the state where we have already shot and will decide if we need to reload
         }
         else
@@ -134,7 +142,13 @@ void gun_tick()
     case shot_st:
         //Check if we need to auto-reload (out of ammo), or if we should go to force-reload state
         reloadTimer = RESET;	//Reset the reload timer before going into either reload state
-        if (shotCount == NO_SHOTS_LEFT)	//If we have no shots left
+        if (!gun_enabled)
+        {
+            gun_currentState = wait_st;
+            trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to indicate we have handled it)
+            reloadTimer = RESET;        //Reset the reload timer initially
+        }
+        else if (shotCount == NO_SHOTS_LEFT)	//If we have no shots left
         {
             gun_currentState = auto_reload_st;	//Then we need to auto-reload no matter what
         }
@@ -145,7 +159,13 @@ void gun_tick()
         break;
 
     case force_reload_st:	//If trigger continues being pulled, reload after 3 seconds. If trigger is released, return to wait_st
-        if (!trigger_debouncePressed())	//If the debounced trigger is no longer being pulled
+        if (!gun_enabled)
+        {
+            gun_currentState = wait_st;
+            trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to indicate we have handled it)
+            reloadTimer = RESET;        //Reset the reload timer initially
+        }
+        else if (!trigger_debouncePressed())	//If the debounced trigger is no longer being pulled
         {
             gun_currentState = wait_st;	//Go back to the state where we will wait for the next shot to be fired
         }
@@ -161,7 +181,13 @@ void gun_tick()
         break;
 
     case auto_reload_st:	//Wait for 2 seconds before auto-reloading
-        if (reloadTimer > AUTO_RELOAD_TIME)	//If we reached the 2 second auto-reloading time
+        if (!gun_enabled)
+        {
+            gun_currentState = wait_st;
+            trigger_clearWantsToShoot();//Clear the flag that told us the player is trying to shoot (to indicate we have handled it)
+            reloadTimer = RESET;        //Reset the reload timer initially
+        }
+        else if (reloadTimer > AUTO_RELOAD_TIME)	//If we reached the 2 second auto-reloading time
         {
 
             gun_reload();				//Reload the gun
